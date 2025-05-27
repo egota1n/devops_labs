@@ -13,12 +13,18 @@ app.use(helmet());
 app.use(morgan('combined'));
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+        process.exit(1);
+    }
+};
 
 app.use('/api/tasks', tasksRouter);
 
@@ -32,8 +38,13 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3303;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 
-module.exports = app;
+module.exports = { app, connectDB };
+
+if (require.main === module) {
+    connectDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    });
+}
