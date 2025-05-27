@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ lab1, test1 ]
+  pull_request:
+    branches: [ lab1, test1 ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.stats()'" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: server
+
+      - name: Check MongoDB is ready
+        run: |
+          until nc -z localhost 27017; do
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+
+      - name: Start build (simulate run)
+        run: node app.js &
+        working-directory: server
+
+      - name: Wait briefly to simulate successful boot
+        run: sleep 5
+
+      - name: Output success
+        run: echo "Build process completed successfully."

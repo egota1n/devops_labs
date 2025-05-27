@@ -1,3 +1,5 @@
+[![Status CI](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml/badge.svg?branch=lab1)](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml)
+
 ### Лабораторная работа №1
 
 В рамках Лабораторной работы реализовано:
