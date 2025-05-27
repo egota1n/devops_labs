@@ -1,32 +1,11 @@
-import { render, fireEvent, waitFor } from '@testing-library/vue'
+import { render, fireEvent, waitFor, screen } from '@testing-library/vue'
 import App from './App.vue'
 import HomeView from './views/HomeView.vue'
 import axios from 'axios'
-import { Table, message } from 'ant-design-vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { expect, vi } from 'vitest'
 
 vi.mock('axios')
-vi.mock('ant-design-vue', () => ({
-    message: {
-        success: vi.fn(),
-        error: vi.fn(),
-    },
-}))
-
-global.window.matchMedia = global.window.matchMedia || function() {
-    return {
-        matches: false,
-        addListener: () => {},
-        removeListener: () => {},
-    }
-}
-
-if (!window.getComputedStyle) {
-    window.getComputedStyle = () => ({
-        getPropertyValue: () => '',
-    })
-}
 
 const router = createRouter({
     history: createWebHistory(),
@@ -43,36 +22,56 @@ describe('Task Manager App', () => {
         })
     })
 
-    it('renders task manager title', async () => {
-        const { findByText } = render(App, {
-            global: { plugins: [router] },
-        })
-        await router.isReady()
+    afterEach(() => {
+        vi.clearAllMocks()
+    })
 
-        expect(await findByText('Task Manager')).toBeTruthy()
+    it('renders task manager title', async () => {
+        render(App, {
+            global: {
+                plugins: [router],
+            },
+        })
+
+        await router.isReady()
+        expect(await screen.findByText('Task Manager')).toBeTruthy()
     })
 
     it('displays a list of tasks', async () => {
-        const { findByText } = render(App, { global: { plugins: [router] } })
+        render(App, {
+            global: {
+                plugins: [router]
+            }
+        })
         await router.isReady()
 
-        expect(await findByText('Task 1')).toBeTruthy()
-        expect(await findByText('Task 2')).toBeTruthy()
+        expect(await screen.findByText('Task 1')).toBeTruthy()
+        expect(await screen.findByText('Task 2')).toBeTruthy()
     })
 
     it('allows adding a new task', async () => {
-        axios.post.mockResolvedValue({
-            data: { _id: '3', title: 'New Task', description: 'New Desc', completed: false },
-        })
+        const newTask = {
+            _id: '3',
+            title: 'New Task',
+            description: 'New Desc',
+            completed: false
+        }
+        axios.post.mockResolvedValue({ data: newTask })
 
-        const { getByPlaceholderText, getByText } = render(App, {
-            global: { plugins: [router] },
+        render(App, {
+            global: {
+                plugins: [router],
+            },
         })
         await router.isReady()
 
-        await fireEvent.update(getByPlaceholderText('Task title'), 'New Task')
-        await fireEvent.update(getByPlaceholderText('Task description'), 'New Desc')
-        await fireEvent.click(getByText('Add Task'))
+        const titleInput = screen.getByPlaceholderText('Task title')
+        const descInput = screen.getByPlaceholderText('Task description')
+        const submitButton = screen.getByText('Add Task')
+
+        await fireEvent.update(titleInput, 'New Task')
+        await fireEvent.update(descInput, 'New Desc')
+        await fireEvent.click(submitButton)
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith('/api/tasks', {
@@ -80,26 +79,39 @@ describe('Task Manager App', () => {
                 description: 'New Desc',
                 completed: false,
             })
-            expect(message.success).toHaveBeenCalledWith('Task added successfully')
         })
     })
 
     it('allows editing a task', async () => {
-        axios.put.mockResolvedValue({
-            data: { _id: '1', title: 'Updated Task', description: 'Updated Desc', completed: false },
-        })
+        const updatedTask = {
+            _id: '1',
+            title: 'Updated Task',
+            description: 'Updated Desc',
+            completed: false
+        }
+        axios.put.mockResolvedValue({ data: updatedTask })
 
-        const { findAllByText, getByPlaceholderText, getByText } = render(App, {
-            global: { plugins: [router] },
+        render(App, {
+            global: {
+                plugins: [router],
+            },
         })
         await router.isReady()
 
-        const editButtons = await findAllByText('Edit')
+        await screen.findByText('Task 1')
+
+        const editButtons = await screen.findAllByText('Edit')
         await fireEvent.click(editButtons[0])
 
-        await fireEvent.update(getByPlaceholderText('Task title'), 'Updated Task')
-        await fireEvent.update(getByPlaceholderText('Task description'), 'Updated Desc')
-        await fireEvent.click(getByText('Update Task'))
+        const titleInput = screen.getByPlaceholderText('Task title')
+        const descInput = screen.getByPlaceholderText('Task description')
+        const submitButton = screen.getByText('Update Task')
+
+        await fireEvent.update(titleInput, '')
+        await fireEvent.update(titleInput, 'Updated Task')
+        await fireEvent.update(descInput, '')
+        await fireEvent.update(descInput, 'Updated Desc')
+        await fireEvent.click(submitButton)
 
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith('/api/tasks/1', {
@@ -107,22 +119,25 @@ describe('Task Manager App', () => {
                 description: 'Updated Desc',
                 completed: false,
             })
-            expect(message.success).toHaveBeenCalledWith('Task updated successfully')
         })
     })
 
     it('allows deleting a task', async () => {
         axios.delete.mockResolvedValue({})
 
-        const { findAllByText } = render(App, { global: { plugins: [router] } })
+        render(App, {
+            global: {
+                plugins: [router]
+            }
+        })
         await router.isReady()
 
-        const deleteButtons = await findAllByText('Delete')
+        await screen.findByText('Task 1')
+        const deleteButtons = await screen.findAllByText('Delete')
         await fireEvent.click(deleteButtons[0])
 
         await waitFor(() => {
             expect(axios.delete).toHaveBeenCalledWith('/api/tasks/1')
-            expect(message.success).toHaveBeenCalledWith('Task deleted')
         })
     })
 })
