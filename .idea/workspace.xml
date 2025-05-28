@@ -5,43 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce916fc5-fa98-428a-9e05-5f42c2ceff52" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/.prettierrc.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/.vscode/extensions.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/.vscode/settings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/env.d.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/eslint.config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/public/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/App.spec.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/App.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/assets/main.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/router/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/shims-vue.d.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/stores/counter.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/tests/setup.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/views/HomeView.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/tsconfig.app.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/tsconfig.node.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/tsconfig.vitest.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/vite.config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/vitest.config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/app.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/models/Task.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/routes/tasks.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/test/app.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,36 +36,66 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Jest.Task API.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Vitest.Task Manager App.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;lab1&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/claramente/Documents/GitHub/devops_labs&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/claramente/Documents/GitHub/devops_labs/server/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/claramente/Documents/GitHub/devops_labs/client/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Jest.Health Check (1).executor": "Run",
+    "Jest.Health Check.executor": "Run",
+    "Jest.Task API (1).executor": "Debug",
+    "Jest.Task API.GET /api/tasks.executor": "Run",
+    "Jest.Task API.GET /api/tasks.should return empty array when no tasks.executor": "Run",
+    "Jest.Task API.executor": "Run",
+    "Jest.Task API.should get all tasks.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Vitest.Task Manager App.executor": "Run",
+    "git-widget-placeholder": "test1",
+    "last_opened_file_path": "/Users/claramente/Documents/GitHub/devops_labs",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/claramente/Documents/GitHub/devops_labs/server/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "ts.external.directory.path": "/Users/claramente/Documents/GitHub/devops_labs/client/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;vue.recent.templates&quot;: [
-      &quot;Vue Composition API Component&quot;
+  "keyToStringList": {
+    "vue.recent.templates": [
+      "Vue Composition API Component"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="Vitest.Task Manager App">
+    <configuration name="Health Check (1)" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/server/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$/server" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/server/test/app.test.js" />
+      <test-names>
+        <test-name value="Health Check" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Task API (1)" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/server/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$/server" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/server/app.js" />
+      <test-names>
+        <test-name value="Task API" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <configuration name="Task API" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/server/node_modules/jest" />
@@ -110,6 +105,19 @@
       <test-file value="$PROJECT_DIR$/server/test/app.test.js" />
       <test-names>
         <test-name value="Task API" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Task API.should get all tasks" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/server/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$/server" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/server/test/app.test.js" />
+      <test-names>
+        <test-name value="Task API" />
+        <test-name value="should get all tasks" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -130,6 +138,9 @@
       <list>
         <item itemvalue="Vitest.Task Manager App" />
         <item itemvalue="Jest.Task API" />
+        <item itemvalue="Jest.Task API.should get all tasks" />
+        <item itemvalue="Jest.Health Check (1)" />
+        <item itemvalue="Jest.Task API (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -148,7 +159,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1748283330024</updated>
-      <workItem from="1748283331341" duration="11306000" />
+      <workItem from="1748283331341" duration="12697000" />
+      <workItem from="1748349248704" duration="1537000" />
+      <workItem from="1748375596218" duration="7435000" />
     </task>
     <servers />
   </component>
