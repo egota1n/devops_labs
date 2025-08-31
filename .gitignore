@@ -31,3 +31,15 @@ workspace.xml
 *.sw?
 
 *.tsbuildinfo
+
+# Terraform
+key.json
+
+*.tfvars
+terraform.tfvars
+*.auto.tfvars
+*.lock.hcl
+
+*.tfstate
+*.tfstate.backup
+.terraform/

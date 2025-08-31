@@ -1,109 +1,37 @@
-[![Status CI](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml/badge.svg?branch=lab1)](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml)
-
-### Лабораторная работа №1
-
-#### Описание проекта
-
-TaskManager – веб-приложение для управления задачами, разработанное в рамках лабораторной работы по DevOps.
-
-Приложение позволяет:
-
-- Создавать, просматривать, обновлять и удалять задачи (CRUD операции)
-- Отслеживать статус выполнения задач (Pending/Completed)
-- Организовывать workflow в соответствии с принципами DevOps
-
-#### Функциональность
-
-##### Основные функции:
-- Создание задач с названием и описанием
-- Редактирование существующих задач
-- Удаление задач
-- Изменение статуса задачи (Pending / Completed)
-- Просмотр списка всех задач
-
-#### Технологический стек
-
-##### Frontend:
-- **Vue 3** - фреймворк для построения пользовательского интерфейса
-- **Ant Design Vue** - UI библиотека компонентов
-- **Vite** - инструмент сборки
-- **Axios** - HTTP-клиент для взаимодействия с backend
-- **Vitest** - фреймворк для тестирования
-
-##### Backend:
-- **Node.js** - среда выполнения JavaScript
-- **Express.js** - веб-фреймворк
-- **MongoDB** - документоориентированная база данных
-- **Mongoose** - ODM для MongoDB
-- **Jest** - фреймворк для тестирования
-
-#### Структура проекта
-
-```bash
-devops_labs/
-├── client/ # Frontend приложение
-│ ├── src/ # Исходный код Vue приложения
-│ ├── tests/ # Тесты клиентской части
-│ └── ... # Конфигурационные файлы
-├── server/ # Backend приложение
-│ ├── src/ # Исходный код Express сервера
-│ ├── tests/ # Тесты серверной части
-│ └── ... # Конфигурационные файлы
-├── .github/workflows/ # CI конфигурации
-│ └── ci.yml # Workflow для GitHub Actions
-└── README.md # Документация проекта
-```
-
-
+### Лабораторная работа №2
 
 #### Установка и запуск
 
-##### Предварительные требования:
-- Node.js v16+
-- MongoDB
-- Git
-
-##### Запуск backend:
+##### Запуск terraform
 ```bash
-cd server
-npm install
-npm start
+cd infrastructure/terraform/
+
+# Ициализация
+terraform init
+
+# Запланирование развертывания
+terraform plan
+
+# Применение конфигурации
+terraform apply
 ```
 
-##### Запуск frontend:
+##### Запуск ansible
 ```bash
-cd client
-npm install
-npm run dev
+cd ./../ansible/
+
+# Проверка доступности
+ansible -i inventory.yml all -m ping -e "vm_ip=$(cd ../terraform && terraform output -raw vm_public_ip)"
+
+# Установка Docker
+ansible-playbook -i inventory.yml playbook.yml -e "vm_ip=$(cd ../terraform && terraform output -raw vm_public_ip)"
 ```
 
-#### Тестирование
-
-##### Запуск тестов backend:
+#### Удаление
 
 ```bash
-cd server
-npm run test
-```
+# Удаление в Yandex Cloud
+terraform destroy
 
-##### Запуск тестов frontend:
-
-```bash
-cd client
-npm run test
-```
-
-Тесты покрывают:
-
-- Модули обработки запросов на сервере
-- Компоненты Vue
-- Взаимодействие с API
-
-#### Тестирование
-
-В проекте настроен CI-процесс с использованием GitHub Actions:
-
-1. **Build** - сборка frontend и backend приложений
-2. **Test** - запуск модульных тестов для обеих частей приложения
-
-Статус сборки отображается бейджем в начале README.
+# Удаление ненужного
+rm -rf .terraform terraform.tfstate* .terraform.lock.hcl
