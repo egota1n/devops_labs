@@ -13,6 +13,7 @@ services:
     build: 
       context: ./server
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: taskmanager-backend
     ports:
       - "3303:3303"
@@ -28,6 +29,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: taskmanager-frontend
     ports:
       - "80:80"
