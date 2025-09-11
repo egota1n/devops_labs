@@ -1,0 +1,247 @@
+---
+- name: Деплой фронтенда, бэкенда, MongoDB и Metrics Server с HPA в Kubernetes
+  hosts: all
+  become: yes
+  vars:
+    kubeconfig_path: "/home/ubuntu/.kube/config"
+
+  tasks:
+    - name: Деплой MongoDB
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: taskmanager-mongo
+            labels:
+              app: taskmanager-mongo
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: taskmanager-mongo
+            template:
+              metadata:
+                labels:
+                  app: taskmanager-mongo
+              spec:
+                tolerations:
+                  - key: "node-role.kubernetes.io/control-plane"
+                    operator: "Exists"
+                    effect: "NoSchedule"
+                containers:
+                  - name: mongo
+                    image: mongo:5
+                    ports:
+                      - containerPort: 27017
+        wait: yes
+
+    - name: Сервис для MongoDB
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: mongo-service
+          spec:
+            selector:
+              app: taskmanager-mongo
+            ports:
+              - protocol: TCP
+                port: 27017
+                targetPort: 27017
+            type: ClusterIP
+
+    - name: Деплой backend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: taskmanager-backend
+            labels:
+              app: taskmanager-backend
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: taskmanager-backend
+            template:
+              metadata:
+                labels:
+                  app: taskmanager-backend
+              spec:
+                tolerations:
+                  - key: "node-role.kubernetes.io/control-plane"
+                    operator: "Exists"
+                    effect: "NoSchedule"
+                containers:
+                  - name: backend
+                    image: egor1248/devops_labs-backend:amd64
+                    ports:
+                      - containerPort: 3303
+                    env:
+                      - name: MONGODB_URI
+                        value: "mongodb://mongo-service:27017/taskmanager"
+                      - name: NODE_ENV
+                        value: "production"
+                    resources:
+                      requests:
+                        cpu: "100m"
+                      limits:
+                        cpu: "500m"
+        wait: yes
+
+    - name: Создаем HPA для backend (CPU target 15%)
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: autoscaling/v2
+          kind: HorizontalPodAutoscaler
+          metadata:
+            name: backend-hpa
+          spec:
+            scaleTargetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: taskmanager-backend
+            minReplicas: 1
+            maxReplicas: 5
+            metrics:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+                  averageUtilization: 15
+
+    - name: Сервис для backend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: backend
+          spec:
+            selector:
+              app: taskmanager-backend
+            ports:
+              - protocol: TCP
+                port: 3303
+                targetPort: 3303
+            type: ClusterIP
+
+    - name: Деплой frontend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: taskmanager-frontend
+            labels:
+              app: taskmanager-frontend
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: taskmanager-frontend
+            template:
+              metadata:
+                labels:
+                  app: taskmanager-frontend
+              spec:
+                tolerations:
+                  - key: "node-role.kubernetes.io/control-plane"
+                    operator: "Exists"
+                    effect: "NoSchedule"
+                containers:
+                  - name: frontend
+                    image: egor1248/devops_labs-frontend:amd64
+                    ports:
+                      - containerPort: 80
+                    env:
+                      - name: VUE_APP_BACKEND_URL
+                        value: "http://backend:3303"
+        wait: yes
+
+    - name: Сервис для frontend (NodePort)
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: default
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: frontend
+          spec:
+            selector:
+              app: taskmanager-frontend
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+            type: NodePort
+
+    - name: Деплой Metrics Server с toleration для одновузлового кластера
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: present
+        namespace: kube-system
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: metrics-server
+            labels:
+              k8s-app: metrics-server
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                k8s-app: metrics-server
+            template:
+              metadata:
+                labels:
+                  k8s-app: metrics-server
+              spec:
+                tolerations:
+                  - key: "node-role.kubernetes.io/control-plane"
+                    operator: "Exists"
+                    effect: "NoSchedule"
+                containers:
+                  - name: metrics-server
+                    image: registry.k8s.io/metrics-server/metrics-server:v0.8.0
+                    args:
+                      - --cert-dir=/tmp
+                      - --secure-port=4443
+                      - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+                      - --kubelet-insecure-tls
+                      - --metric-resolution=15s
+                    ports:
+                      - containerPort: 4443
+                        name: main-port
+                    resources:
+                      requests:
+                        cpu: "100m"
+                        memory: "200Mi"
+                      limits:
+                        cpu: "200m"
+                        memory: "200Mi"

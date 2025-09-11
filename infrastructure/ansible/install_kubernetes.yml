@@ -1,0 +1,163 @@
+---
+- name: Установка Kubernetes на одну ВМ (master + node)
+  hosts: all
+  become: yes
+  vars:
+    kubeconfig_path: "/home/ubuntu/.kube/config"
+
+  tasks:
+    - name: Обновляем apt-кеш
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Устанавливаем зависимости
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Выключить swap (временно)
+      ansible.builtin.shell: swapoff -a
+      changed_when: false
+
+    - name: Создаём каталог для keyrings
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Скачиваем GPG ключ Kubernetes и сохраняем в keyring
+      ansible.builtin.shell: |
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key \
+          | gpg --dearmor | tee /etc/apt/keyrings/kubernetes-apt-keyring.gpg > /dev/null
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Устанавливаем корректные права на keyring
+      file:
+        path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        mode: '0644'
+
+    - name: Добавляем репозиторий Kubernetes
+      copy:
+        dest: /etc/apt/sources.list.d/kubernetes.list
+        content: |
+          deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+        mode: '0644'
+
+    - name: Обновляем apt-кеш
+      apt:
+        update_cache: yes
+
+    - name: Устанавливаем containerd
+      apt:
+        name: containerd
+        state: present
+
+    - name: Создаём конфиг для containerd
+      ansible.builtin.shell: |
+        mkdir -p /etc/containerd
+        containerd config default | tee /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
+
+    - name: Включаем systemd-cgroup для containerd
+      ansible.builtin.shell: sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
+    - name: Перезапускаем containerd
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
+
+    - name: Устанавливаем kubeadm, kubelet, kubectl
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+        update_cache: yes
+
+    - name: Фиксируем версии kubeadm, kubelet, kubectl
+      ansible.builtin.shell: apt-mark hold kubelet kubeadm kubectl
+
+    - name: Включаем IP forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+
+    - name: Создаём директорию для kubeadm config у пользователя ubuntu
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        mode: '0755'
+        owner: ubuntu
+        group: ubuntu
+    
+    - name: Устанавливаем pip3
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Устанавливаем Python-модуль kubernetes
+      ansible.builtin.pip:
+        name: kubernetes
+        state: present
+
+    - name: Загружаем модуль br_netfilter
+      ansible.builtin.modprobe:
+        name: br_netfilter
+        state: present
+
+    - name: Включаем параметры ядра для Kubernetes
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+        mode: '0644'
+
+    - name: Применяем sysctl параметры
+      ansible.builtin.command: sysctl --system
+
+    - name: Проверяем, инициализирован ли Kubernetes
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: kubeadm_status
+
+    - name: Инициализация кластера Kubernetes (если ещё не инициализирован)
+      ansible.builtin.shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+      when: not kubeadm_status.stat.exists
+
+    - name: Создаём kubeconfig директорию для пользователя ubuntu
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        mode: '0755'
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Копируем admin.conf в kubeconfig
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ kubeconfig_path }}"
+        remote_src: yes
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Устанавливаем flannel (CNI)
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        src: https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
