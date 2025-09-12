@@ -164,4 +164,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: |
             # --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
-            --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=gor1248/devops_labs-frontend:2025.09.12-4c08bf2"
+            --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=egor1248/devops_labs-frontend:2025.09.12-4c08bf2"
