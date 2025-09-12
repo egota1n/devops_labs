@@ -161,6 +161,7 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: infrastructure/ansible/deploy_app_kubernetes.yml
+          inventory: infrastructure/ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: |
             --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=egor1248/devops_labs-frontend:2025.09.12-4c08bf2"
