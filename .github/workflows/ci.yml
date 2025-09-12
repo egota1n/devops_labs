@@ -163,5 +163,4 @@ jobs:
           inventory: infrastructure/ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: |
-            -i infrastructure/ansible/inventory.ini
             --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
