@@ -2,7 +2,7 @@
     <a-layout>
       <a-layout-content style="padding: 50px 50px 0 50px">
         <div class="container">
-          <a-typography-title :level="2" style="margin-bottom: 30px">Task Manager 1</a-typography-title>
+          <a-typography-title :level="2" style="margin-bottom: 30px">Task Manager</a-typography-title>
           <a-card title="Add/Edit Task" style="margin-bottom: 20px">
             <a-form layout="vertical">
               <a-form-item label="Title">

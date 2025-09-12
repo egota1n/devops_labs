@@ -1,3 +1,5 @@
+[![CI](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml/badge.svg)](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml)
+
 ### Лабораторная работа №3
 
 ##### Создание ВМ
