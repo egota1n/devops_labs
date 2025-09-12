@@ -26,11 +26,9 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
 
-      - name: Run Ansible Playbook
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          playbook: infrastructure/ansible/deploy_app_kubernetes.yml
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          inventory: infrastructure/ansible/inventory.ini
-          options: |
+      - name: Run Ansible playbook
+        run: |
+          ansible-playbook \
+            -i infrastructure/ansible/inventory.ini \
+            infrastructure/ansible/deploy_app_kubernetes.yml \
             --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=egor1248/devops_labs-frontend:2025.09.12-4c08bf2"
