@@ -24,14 +24,14 @@ resource "yandex_compute_instance" "vm" {
   zone        = "ru-central1-a"
 
   resources {
-    cores  = 2
-    memory = 4
+    cores  = 4
+    memory = 8
   }
 
   boot_disk {
     initialize_params {
       image_id = "fd81jtg9td453r94s6l1" # Ubuntu 20.04 LTS
-      size     = 20
+      size     = 30
     }
   }
 

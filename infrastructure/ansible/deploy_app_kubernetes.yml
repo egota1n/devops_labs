@@ -1,4 +1,3 @@
----
 - name: Деплой фронтенда, бэкенда, MongoDB и Metrics Server с HPA в Kubernetes
   hosts: all
   become: yes
@@ -70,6 +69,8 @@
             name: taskmanager-backend
             labels:
               app: taskmanager-backend
+            annotations:
+              redeploy-timestamp: "{{ ansible_date_time.iso8601 }}"
           spec:
             replicas: 1
             selector:
@@ -79,6 +80,10 @@
               metadata:
                 labels:
                   app: taskmanager-backend
+                annotations:
+                  prometheus.io/scrape: "true"
+                  prometheus.io/port: "3303"
+                  prometheus.io/path: "/api/metrics"
               spec:
                 tolerations:
                   - key: "node-role.kubernetes.io/control-plane"
@@ -86,7 +91,8 @@
                     effect: "NoSchedule"
                 containers:
                   - name: backend
-                    image: egor1248/devops_labs-backend:amd64
+                    image: egor1248/devops_labs-backend:amd64_v1
+                    imagePullPolicy: Always
                     ports:
                       - containerPort: 3303
                     env:
@@ -119,12 +125,12 @@
             minReplicas: 1
             maxReplicas: 5
             metrics:
-            - type: Resource
-              resource:
-                name: cpu
-                target:
-                  type: Utilization
-                  averageUtilization: 15
+              - type: Resource
+                resource:
+                  name: cpu
+                  target:
+                    type: Utilization
+                    averageUtilization: 15
 
     - name: Сервис для backend
       kubernetes.core.k8s:
@@ -157,6 +163,8 @@
             name: taskmanager-frontend
             labels:
               app: taskmanager-frontend
+            annotations:
+              redeploy-timestamp: "{{ ansible_date_time.iso8601 }}"
           spec:
             replicas: 1
             selector:
@@ -173,7 +181,8 @@
                     effect: "NoSchedule"
                 containers:
                   - name: frontend
-                    image: egor1248/devops_labs-frontend:amd64
+                    image: egor1248/devops_labs-frontend:amd64_v1
+                    imagePullPolicy: Always
                     ports:
                       - containerPort: 80
                     env:
