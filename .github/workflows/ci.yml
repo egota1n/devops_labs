@@ -174,4 +174,4 @@ jobs:
         run: |
           ansible-playbook \
             -i infrastructure/ansible/inventory.yml infrastructure/ansible/deploy_app_kubernetes.yml \
-            --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
+            --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }} vm_ip=${{ secrets.VM_IP }}"
