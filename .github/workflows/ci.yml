@@ -166,7 +166,7 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: infrastructure/ansible/deploy_app_kubernetes.yml
-          inventory: inventory.tmp
+          inventory: infrastructure/ansible/inventory.tmp
           key: /tmp/ssh_key
           options: |
             --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
