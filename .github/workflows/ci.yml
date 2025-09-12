@@ -139,29 +139,28 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    # needs: docker
-    # needs: build
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Download image info
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: docker-images
-      #     path: .
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      # - name: Load env
-      #   run: cat docker-images.env >> $GITHUB_ENV
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
 
-      - name: Debug inventory file
-        run: cat infrastructure/ansible/inventory.ini
-
-      - name: Run Ansible deploy
+      - name: Run Ansible Playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: infrastructure/ansible/deploy_app_kubernetes.yml
-          inventory: infrastructure/ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          inventory: infrastructure/ansible/inventory.ini
           options: |
             --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=egor1248/devops_labs-frontend:2025.09.12-4c08bf2"
