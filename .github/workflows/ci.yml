@@ -153,6 +153,9 @@ jobs:
       - name: Load env
         run: cat docker-images.env >> $GITHUB_ENV
 
+      - name: Debug inventory file
+        run: cat infrastructure/ansible/inventory.ini
+
       - name: Run Ansible deploy
         uses: dawidd6/action-ansible-playbook@v2
         with:
@@ -160,4 +163,5 @@ jobs:
           inventory: infrastructure/ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: |
+            -i infrastructure/ansible/inventory.ini
             --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
