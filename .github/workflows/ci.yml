@@ -167,13 +167,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
 
-      - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Run Ansible playbook
         run: |
           ansible-playbook \
-            -i inventory.yml deploy_app_kubernetes.yml -e "51.250.64.230" \
+            -i inventory.yml deploy_app_kubernetes.yml \
             --extra-vars "backend_image=egor1248/devops_labs-backend:2025.09.12-4c08bf2 frontend_image=egor1248/devops_labs-frontend:2025.09.12-4c08bf2"
