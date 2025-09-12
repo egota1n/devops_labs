@@ -1,4 +1,4 @@
-[![CI](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml/badge.svg)](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml)
+[![CI](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml/badge.svg?branch=lab3)](https://github.com/egota1n/devops_labs/actions/workflows/ci.yml)
 
 ### Лабораторная работа №3
 
