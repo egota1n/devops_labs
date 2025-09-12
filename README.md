@@ -100,3 +100,12 @@ kubectl get pods -n monitoring
 
 kubectl taint nodes fhmlt73mtlpsu4j4nkg4 node-role.kubernetes.io/control-plane:NoSchedule-
 ```
+
+Prometheus
+http://51.250.64.230:31064/
+
+Grafana
+http://51.250.64.230:30320/
+
+Vue
+http://51.250.64.230:31774/
