@@ -155,8 +155,8 @@ jobs:
       - name: Run Ansible deploy
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: ansible/deploy_app_kubernetes.yml
-          inventory: ansible/inventory.yml
+          playbook: infrastructure/ansible/deploy_app_kubernetes.yml
+          inventory: infrastructure/ansible/inventory.yml
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: |
             --extra-vars "backend_image=${{ env.BACKEND_IMAGE }} frontend_image=${{ env.FRONTEND_IMAGE }}"
