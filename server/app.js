@@ -24,6 +24,8 @@ const httpRequestCounter = new client.Counter({
   labelNames: ['method', 'route', 'status']
 });
 
+register.registerMetric(httpRequestCounter);
+
 app.use((req, res, next) => {
   res.on('finish', () => {
     httpRequestCounter.labels(req.method, req.path, res.statusCode).inc();

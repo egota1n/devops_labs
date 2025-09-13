@@ -35,18 +35,11 @@ export PATH=$PATH:$(go env GOPATH)/bin
 sudo apt install hey
 
 kubectl get svc backend
-hey -z 2m -q 10 -c 5 http://10.105.154.88:3303/api/tasks/
-```
 
-```
-kubectl delete clusterrolebinding metrics-server-auth
-
-kubectl create clusterrolebinding metrics-server-auth \
-  --clusterrole=extension-apiserver-authentication-reader \
-  --serviceaccount=kube-system:metrics-server
-
-kubectl delete pod -n kube-system -l k8s-app=metrics-server
-kubectl get pods -n kube-system -l k8s-app=metrics-server -w
+hey -z 2m -q 10 -c 2 http://10.105.154.88:3303/api/tasks/
+watch -n 2 kubectl top pods -A
+kubectl get hpa backend-hpa -n default -w
+kubectl get hpa
 ```
 
 ##### Установка Prometheus + Grafana
