@@ -21,6 +21,12 @@ jobs:
       - name: Install server dependencies
         run: npm ci
         working-directory: server
+      
+      - name: Create .env from secrets
+        run: |
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
 
       - name: Install client dependencies
         run: npm ci

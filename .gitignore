@@ -10,6 +10,7 @@ lerna-debug.log*
 client/node_modules
 server/node_modules
 .DS_Store
+.env
 dist
 dist-ssr
 coverage
