@@ -97,14 +97,20 @@ jobs:
           NODE_ENV: test
 
       - name: Run client tests
-        run: npm test
+        run: npm run test:coverage
         working-directory: client
 
-      - name: Upload coverage
+      - name: Upload server coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
+          name: server-coverage
           path: server/coverage
+      
+      - name: Upload client coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage
 
   sonar:
     runs-on: ubuntu-latest
@@ -113,11 +119,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download coverage
+      - name: Download server coverage
         uses: actions/download-artifact@v4
         with:
-          name: coverage
+          name: server-coverage
           path: server/coverage
+
+      - name: Download client coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -127,9 +139,9 @@ jobs:
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORG }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.javascript.lcov.reportPaths=server/coverage/lcov.info
-            -Dsonar.sources=server
-            -Dsonar.tests=server/test
+            -Dsonar.javascript.lcov.reportPaths=server/coverage/lcov.info,client/coverage/lcov.info
+            -Dsonar.sources=server,client/src
+            -Dsonar.tests=server/test,client/src
 
   docker:
     runs-on: ubuntu-latest
