@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-frontend
+  labels:
+    app: taskmanager-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmanager-frontend
+  template:
+    metadata:
+      labels:
+        app: taskmanager-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: egor1248/devops_labs-frontend:amd64
+          ports:
+            - containerPort: 80
+          env:
+            - name: VUE_APP_BACKEND_URL
+              value: "http://backend:3303"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: taskmanager-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 80
+  type: NodePort

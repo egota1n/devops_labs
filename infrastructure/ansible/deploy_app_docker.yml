@@ -1,0 +1,77 @@
+- name: Deploy TaskManager application
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure old containers are removed
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+        force_kill: yes
+      loop:
+        - mongodb
+        - backend
+        - frontend
+
+    - name: Remove old volumes
+      command: docker volume rm -f mongodb_data
+      ignore_errors: yes
+
+    - name: Pull Docker images
+      docker_image:
+        name: "{{ item }}"
+        source: pull
+      loop:
+        - egor1248/devops_labs-backend:amd64
+        - egor1248/devops_labs-frontend:amd64
+        - mongo:6
+
+    - name: Create Docker volume for MongoDB
+      docker_volume:
+        name: mongodb_data
+        state: present
+
+    - name: Start MongoDB container
+      docker_container:
+        name: mongodb
+        image: mongo:6
+        state: started
+        restart_policy: always
+        ports:
+          - "27017:27017"
+        volumes:
+          - mongodb_data:/data/db
+        env:
+          MONGO_INITDB_DATABASE: taskmanager
+
+    - name: Wait for MongoDB to be ready (internal check)
+      command: docker exec mongodb mongosh --eval "db.adminCommand('ping')"
+      register: mongo_ready
+      until: mongo_ready.rc == 0
+      retries: 10
+      delay: 5
+
+    - name: Start Backend container
+      docker_container:
+        name: backend
+        image: egor1248/devops_labs-backend:amd64
+        state: started
+        restart_policy: always
+        ports:
+          - "3303:3303"
+        links:
+          - mongodb:mongodb
+        env:
+          MONGODB_URI: "mongodb://mongodb:27017/taskmanager"
+          NODE_ENV: "production"
+          PORT: "3303"
+
+    - name: Start Frontend container
+      docker_container:
+        name: frontend
+        image: egor1248/devops_labs-frontend:amd64
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"
+        links:
+          - backend:backend

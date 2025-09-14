@@ -1,0 +1,41 @@
+services:
+  mongodb:
+    image: mongo:6
+    container_name: taskmanager-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: taskmanager
+
+  backend:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: taskmanager-backend
+    ports:
+      - "3303:3303"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/taskmanager
+      - NODE_ENV=production
+      - PORT=3303
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: taskmanager-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
