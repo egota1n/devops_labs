@@ -15,6 +15,26 @@ afterAll(async () => {
     await mongoose.connection.close();
 });
 
+describe('App server routes', () => {
+  it('should return health status', async () => {
+    const res = await request(app).get('/api/health');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ status: 'OK' });
+  });
+
+  it('should return metrics', async () => {
+    const res = await request(app).get('/api/metrics');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/plain/);
+    expect(res.text).toContain('http_requests_total'); // prom-client metric
+  });
+
+  it('should call error handler on invalid route', async () => {
+    const res = await request(app).get('/api/unknown');
+  });
+});
+
+
 describe('Task API', () => {
     it('should create a new task', async () => {
         const res = await request(app)

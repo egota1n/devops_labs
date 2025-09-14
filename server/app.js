@@ -71,5 +71,9 @@ if (require.main === module) {
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
+
+        // Запуск бота
+        require('./bot');
+        console.log('Telegram bot started');
     });
 }
