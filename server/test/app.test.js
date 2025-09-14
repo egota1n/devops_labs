@@ -16,33 +16,32 @@ afterAll(async () => {
 });
 
 describe('App server routes', () => {
-  it('should return health status', async () => {
-    const res = await request(app).get('/api/health');
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ status: 'OK' });
-  });
+    it('should return health status', async () => {
+        const res = await request(app).get('/api/health');
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual({ status: 'OK' });
+    });
 
-  it('should return metrics', async () => {
-    const res = await request(app).get('/api/metrics');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toMatch(/text\/plain/);
-    expect(res.text).toContain('http_requests_total'); // prom-client metric
-  });
+    it('should return metrics', async () => {
+        const res = await request(app).get('/api/metrics');
+        expect(res.statusCode).toBe(200);
+        expect(res.headers['content-type']).toMatch(/text\/plain/);
+        expect(res.text).toContain('http_requests_total');
+    });
 
-  it('should call error handler on invalid route', async () => {
-    const res = await request(app).get('/api/unknown');
-  });
+    it('should return 404 for unknown route', async () => {
+        const res = await request(app).get('/api/unknown');
+        expect(res.statusCode).toBe(404);
+        expect(res.text).toContain('Cannot GET');
+    });
 });
-
 
 describe('Task API', () => {
     it('should create a new task', async () => {
         const res = await request(app)
             .post('/api/tasks')
-            .send({
-                title: 'Test task',
-                description: 'Test description'
-            });
+            .send({ title: 'Test task', description: 'Test description' });
+
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('_id');
         expect(res.body.title).toBe('Test task');
@@ -100,10 +99,7 @@ describe('Task API', () => {
     });
 
     it('should return 400 when creating invalid task', async () => {
-        const res = await request(app)
-            .post('/api/tasks')
-            .send({}); // no title
-
+        const res = await request(app).post('/api/tasks').send({});
         expect(res.statusCode).toBe(400);
     });
 
@@ -114,5 +110,27 @@ describe('Task API', () => {
             .send({ title: 'Does not exist' });
 
         expect(res.statusCode).toBe(404);
+    });
+});
+
+describe('MongoDB connection', () => {
+    it('should log DB connection', async () => {
+        const logSpy = jest.spyOn(console, 'log').mockImplementation();
+        await connectDB();
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Connected to MongoDB'));
+        logSpy.mockRestore();
+    });
+
+    it('should exit process on DB connection failure', async () => {
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
+        jest.spyOn(mongoose, 'connect').mockRejectedValueOnce(new Error('Fail'));
+
+        await connectDB();
+        expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('MongoDB connection error:'), expect.any(Error));
+        expect(exitSpy).toHaveBeenCalledWith(1);
+
+        errorSpy.mockRestore();
+        exitSpy.mockRestore();
     });
 });
