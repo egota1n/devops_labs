@@ -1,10 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
 
-// eslint-disable-next-line sonarjs/no-insecure-url
-process.env.BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3303/api/tasks';
-// eslint-disable-next-line sonarjs/no-insecure-url
-const API_URL = process.env.BACKEND_URL || 'http://backend:3303/api/tasks';
+const API_URL = process.env.BACKEND_URL || 'http://localhost:3303/api/tasks';
 
 const editingTasks = new Map();
 
