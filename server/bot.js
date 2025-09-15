@@ -1,6 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
 
+process.env.BACKEND_URL = 'http://localhost:3303/api/tasks';
 const API_URL = process.env.BACKEND_URL || 'http://backend:3303/api/tasks';
 const editingTasks = new Map();
 
