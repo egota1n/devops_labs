@@ -94,6 +94,11 @@
                         value: "mongodb://mongo-service:27017/taskmanager"
                       - name: NODE_ENV
                         value: "production"
+                      - name: TELEGRAM_BOT_TOKEN
+                        valueFrom:
+                          secretKeyRef:
+                            name: telegram-bot-token
+                            key: TELEGRAM_BOT_TOKEN
                     resources:
                       requests:
                         cpu: "100m"

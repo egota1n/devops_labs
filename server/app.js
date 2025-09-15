@@ -8,6 +8,7 @@ const client = require('prom-client');
 
 const app = express();
 const tasksRouter = require('./routes/tasks');
+const { createBot } = require('./bot');
 
 app.use(cors());
 app.use(helmet());
@@ -68,12 +69,9 @@ module.exports = { app, connectDB };
 
 if (require.main === module) {
     connectDB().then(() => {
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-
-        // Запуск бота
-        require('./bot');
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        const bot = createBot(process.env.TELEGRAM_BOT_TOKEN);
+        bot.launch();
         console.log('Telegram bot started');
     });
 }
